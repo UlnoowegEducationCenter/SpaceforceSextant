@@ -3,6 +3,6 @@ import datetime
 import pytz
 
 class SextantReadingForm(forms.Form):
-    longitude = forms.FloatField(label='Longitude', initial=44.651070)
-    latitude = forms.FloatField(label='Latitude', initial=-63.582687)
-    date_time = forms.CharField(label='latitude' )
+    longitude = forms.CharField(required= 'False',label='longitude')
+    latitude = forms.CharField(label='latitude')
+    date_time = forms.CharField(label='date_time')
