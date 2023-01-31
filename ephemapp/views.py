@@ -4,23 +4,34 @@ import ephem
 
 def multiply_numbers(request):
     
-    result = "  "
+    result = " "
 
-    sun = ephem.Sun()
-    halifax = ephem.Observer()
-    halifax.lat = "44.651070"
-    halifax.lon = "-63.582687"
+    if request.method == 'POST':
+        form = SextantReadingForm(request.POST)
+        if form.is_valid():
+            date_time = form.cleaned_data['date_time']
+            longitude = form.cleaned_data['longitude']
+            latitude = form.cleaned_data['latitude']
+     
 
-    halifax.date = "1981/11/10 18:00:00"
-    sun.compute(halifax)
-    print(sun.dec)
-
-    result = sun.dec
-
-    print("result:", result)
-      
+            try:
+                sun = ephem.Sun()
+                halifax = ephem.Observer()
               
-    return render(request, 'ephemapp/sun.html', { 'result': result})
+
+                halifax.date = date_time
+                sun.compute(halifax)
+                print(sun.dec)
+
+                result = sun.dec
+
+                print("result:", result)
+                
+            except Exception as e:
+                print("Error:", e)
+    else:
+        form = SextantReadingForm()
+    return render(request, 'ephemapp/sun.html', {'form': form, 'result': result})
 
 
 
