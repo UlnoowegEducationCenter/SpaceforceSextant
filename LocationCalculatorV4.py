@@ -96,7 +96,7 @@ X = np.linalg.solve(A,B)
 #convert cartesian to lat/lon
 x, y, z = X[0], X[1], X[2]
 Lat = Latitude( np.arctan2( z, np.hypot(x,y) )[0]*u.rad, unit = u.deg )
-Lon = Longitude( np.arctan2( y, x )[0]*u.rad, unit = u.deg, wrap_angle = 180*u.deg )
+Lon = -Longitude( np.arctan2( y, x )[0]*u.rad, unit = u.deg, wrap_angle = 180*u.deg )
 
 #### Output
 
