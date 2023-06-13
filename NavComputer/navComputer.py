@@ -17,7 +17,7 @@ import numpy as np # TODO replace with ulab.numpy
 UNIX_epoch_JD = 2440587.5
 deg2rad = math.pi / 180.
 rad2deg = 180. / math.pi
-NavStars = ( # tuple of stars Sideral Hour Angle (SHA) [deg], and declination (DEC) [deg], index is star number with polaris = 0
+NavStars = ( # tuple of stars Sideral Hour Angle (SHA) [deg], and declination (DEC) [deg], index is star number with polaris = 0 Sourced from wikipedia
     (319.,89.),
     (358.,29.),
     (354.,-42.),
@@ -88,7 +88,7 @@ for i in range(numObs):
     while True:
         try:
             starNum = int(input("Star Number: "))
-            #assert starNum not in obs[:][0] # TODO figure out why this isnt working
+            #assert starNum not in obs[:][0] # TODO figure out why this isnt working - supposed to prevent reuse of star numbers
             assert starNum in range(len(NavStars))
         except (ValueError, AssertionError): # excepting errors from invalid star numbers
             print('Invalid star number, try again')
@@ -100,7 +100,8 @@ for i in range(numObs):
     while True:
         try:
             Ho = float(input("Elevation: "))
-        except (ValueError, TypeError):
+            assert (-90.<= Ho) & (Ho <= 90.)
+        except (ValueError, TypeError, AssertionError):
             print("invalid elevation, try again")
             continue
         obs[i][1] = Ho
@@ -119,12 +120,11 @@ for i in range(numObs):
     GHA = (ERA + SHA) % 360. # TODO make this work like longitude (wraps from +180 to -180)
     obs[i][3] = GHA
 
-print("obs = ", obs) #TODO comment out in production code
 
 #### Setup and solve matrix equation
 
-A = np.zeros([3,3]) # initalize A matrix
-B = np.zeros([3,1])
+A = np.zeros([3,3]) # initalize A as square matrix
+B = np.zeros([3,1]) # initalize B as column matrix
 for i in range(numObs): #populate A and B
     starNum = obs[i][0] # which star is used for this observation
     DEC = NavStars[starNum][1]*deg2rad # lookup declination of star and convert to rads
@@ -133,10 +133,8 @@ for i in range(numObs): #populate A and B
     A[i] = [np.cos(DEC)*np.cos(GHA), np.cos(DEC)*np.sin(GHA), np.sin(DEC)]
     B[i] = [np.sin(Ho)]
 
-print("A is a ",type(A),"\nA = ",A) # TODO comment out in production code
-print("B is a ",type(B),"\nB = ",B) # TODO comment out in production code
-
 try:
+    #TODO: insert a check for matrix invertability, e.g. if det(A)<0.1 raise a warning
     A_inv = np.linalg.inv(A) # TODO investigate whether this needs to be inverse or will transpose work?
     print("A_inv is a ",type(A_inv),"\nA_inv=",A_inv) # TODO comment out in production code
     X = np.dot(A_inv,B) #solve matrix equation for cartesian position
@@ -144,12 +142,10 @@ except(ValueError):
     print('No solution exists, please try again.')
     sys.exit(1)
 
-print("X is a ",type(X),"\nX=",X) # TODO comment out in production code
-
 #### Convert to Lat / Lon and print
 x, y, z = X[0], X[1], X[2]
 lat = np.arctan2(z,np.sqrt(x*x+y*y))*rad2deg
 lon = np.arctan2(y,x)*rad2deg
 
-print("lat = ",lat)
-print("lon = ",lon)
+print("Latitude = ",lat)
+print("Longitude = ",lon)
