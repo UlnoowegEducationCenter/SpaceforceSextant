@@ -3,149 +3,169 @@
 # Copyright Ulnooweg Education Centre, 2023, All rights reserved
 ###############################################################################
 
-
-#### Import packages
-
-#import board #TODO uncomment when running on device
-import sys 
-import time # TODO replace with RTC module
+# Import packages
+import board
+# import busio
+import supervisor
+import time
+import adafruit_pcf8523
 import math
-import numpy as np # TODO replace with ulab.numpy
+import ulab.numpy as np
 
+# Setup hardware
+i2c = board.I2C()
+rtc = adafruit_pcf8523.PCF8523(i2c)
 
-#### Constants
+# set the RTC
+settime = False
+if settime:
+    # get time from https://nrc.canada.ca/en/web-clock/
+    #                   year, mon, date, hour, min, sec, wday, yday, isdst
+    rtc.datetime = time.struct_time((2023, 06, 14, 19, 21, 50, 4, -1, -1))
+    print(rtc.datetime)
+    # you must set year, mon, date, hour, min, sec and weekday
+    # leave yday and isdst at -1
+
+# Constants
 UNIX_epoch_JD = 2440587.5
-deg2rad = math.pi / 180.
-rad2deg = 180. / math.pi
-NavStars = ( # tuple of stars Sideral Hour Angle (SHA) [deg], and declination (DEC) [deg], index is star number with polaris = 0 Sourced from wikipedia
-    (319.,89.),
-    (358.,29.),
-    (354.,-42.),
-    (350.,56.),
-    (349.,-18.),
-    (336.,-57.),
-    (328.,23.),
-    (316.,-40.),
-    (315.,4.),
-    (309.,50.),
-    (291.,16.),
-    (282.,-8.),
-    (281.,46.),
-    (279.,6.),
-    (279.,29.),
-    (276.,-1.),
-    (271.,7.),
-    (264.,-53.),
-    (259.,-17.),
-    (256.,-29.),
-    (245.,5.),
-    (244.,28.),
-    (234.,-59.),
-    (223.,-43.),
-    (222.,-70.),
-    (218.,-9.),
-    (208.,12.),
-    (194.,62.),
-    (183.,15.),
-    (176.,-17.),
-    (174.,-63.),
-    (172.,-57.),
-    (167.,56.),
-    (159.,-11.),
-    (153.,49.),
-    (149.,-60.),
-    (149.,-36.),
-    (146.,19.),
-    (140.,-61.),
-    (138.,-16.),
-    (137.,74.),
-    (127.,27.),
-    (113.,-26.),
-    (108.,-69.),
-    (103.,-16.),
-    (97.,-37.),
-    (96.,13.),
-    (91.,51.),
-    (84.,-34.),
-    (81.,39.),
-    (76.,-26.),
-    (63.,9.),
-    (54.,-57.),
-    (50.,45.),
-    (34.,10.),
-    (28.,-47.),
-    (16.,-30.),
-    (14.,15.)
-    )
+deg2rad = math.pi / 180.0
+rad2deg = 180.0 / math.pi
+NavStars = (  # Sideral Hour Angle (SHA) [deg], declination (DEC) [deg]
+    (319.0, 89.0),
+    (358.0, 29.0),
+    (354.0, -42.0),
+    (350.0, 56.0),
+    (349.0, -18.0),
+    (336.0, -57.0),
+    (328.0, 23.0),
+    (316.0, -40.0),
+    (315.0, 4.0),
+    (309.0, 50.0),
+    (291.0, 16.0),
+    (282.0, -8.0),
+    (281.0, 46.0),
+    (279.0, 6.0),
+    (279.0, 29.0),
+    (276.0, -1.0),
+    (271.0, 7.0),
+    (264.0, -53.0),
+    (259.0, -17.0),
+    (256.0, -29.0),
+    (245.0, 5.0),
+    (244.0, 28.0),
+    (234.0, -59.0),
+    (223.0, -43.0),
+    (222.0, -70.0),
+    (218.0, -9.0),
+    (208.0, 12.0),
+    (194.0, 62.0),
+    (183.0, 15.0),
+    (176.0, -17.0),
+    (174.0, -63.0),
+    (172.0, -57.0),
+    (167.0, 56.0),
+    (159.0, -11.0),
+    (153.0, 49.0),
+    (149.0, -60.0),
+    (149.0, -36.0),
+    (146.0, 19.0),
+    (140.0, -61.0),
+    (138.0, -16.0),
+    (137.0, 74.0),
+    (127.0, 27.0),
+    (113.0, -26.0),
+    (108.0, -69.0),
+    (103.0, -16.0),
+    (97.0, -37.0),
+    (96.0, 13.0),
+    (91.0, 51.0),
+    (84.0, -34.0),
+    (81.0, 39.0),
+    (76.0, -26.0),
+    (63.0, 9.0),
+    (54.0, -57.0),
+    (50.0, 45.0),
+    (34.0, 10.0),
+    (28.0, -47.0),
+    (16.0, -30.0),
+    (14.0, 15.0),
+)
 
-
-#### Get observations from user
+# Get observations from user
 numObs = 3
-obs = [ [None for i in range(4)] for j in range(numObs) ] # star number, elevation (Ho), time, GHA
+obs = [[None for i in range(4)] for j in range(numObs)]  
+# [star number, elevation (Ho), time, GHA]
 for i in range(numObs):
-    
+
     # get star number from user & validate input
     while True:
         try:
             starNum = int(input("Star Number: "))
-            #assert starNum not in obs[:][0] # TODO figure out why this isnt working - supposed to prevent reuse of star numbers
+            # assert starNum not in obs[:][0] # TODO check for star reuse
             assert starNum in range(len(NavStars))
-        except (ValueError, AssertionError): # excepting errors from invalid star numbers
-            print('Invalid star number, try again')
+        except (ValueError, AssertionError):
+            print("Invalid star number, try again")
             continue
         obs[i][0] = starNum
         break
-    
+
     # get elevation from user and validate input
     while True:
         try:
             Ho = float(input("Elevation: "))
-            assert (-90.<= Ho) & (Ho <= 90.)
+            assert (-90.0 <= Ho) & (Ho <= 90.0)
         except (ValueError, TypeError, AssertionError):
             print("invalid elevation, try again")
             continue
         obs[i][1] = Ho
         break
-    
+
     # Get time
-    t_unix = time.time() # TODO replace with RTC function
-    obs[i][2] = t_unix
+    obs[i][2] = time.mktime(rtc.datetime)
+    # converts RTC datetime to seconds since UNIX epoch
     
     # calculate GHA
-    SHA = NavStars[starNum][0] # lookup the star number in the observation and return the SHA
-    UT1 = obs[i][2] # universal time calculated from unix time (from observation via. RTC) #TODO correction factor from UTC to UT1
-    JD_UT1 = (UT1/86400.) + 2440587.5 # UT1 to julian date
-    T_u = JD_UT1 - 2451545.0 # this line and the next one are from wikipedia's page on Sideral Time
-    ERA = 360*(0.7790572732640 + 1.00273781191135448*T_u) # earth rotation angle in degrees
-    GHA = (ERA + SHA) % 360. # TODO make this work like longitude (wraps from +180 to -180)
+    SHA = NavStars[starNum][0]  # lookup the star numbers & return SHA
+    UT1 = obs[i][2]  # TODO implement UTC to UT1 calculation
+    JD_UT1 = (UT1 / 86400.0) + 2440587.5  # UT1 to julian date
+    T_u = (JD_UT1 - 2451545.0)  # from Sideral Time wiki page
+    ERA = 360 * (0.7790572732640 + 1.00273781191135448 * T_u)  # earth rot. angle [deg]
+    GHA = (ERA + SHA) % 360.0  # TODO wrap from +180 to -180
     obs[i][3] = GHA
 
+# Setup and solve matrix equation
 
-#### Setup and solve matrix equation
-
-A = np.zeros([3,3]) # initalize A as square matrix
-B = np.zeros([3,1]) # initalize B as column matrix
-for i in range(numObs): #populate A and B
-    starNum = obs[i][0] # which star is used for this observation
-    DEC = NavStars[starNum][1]*deg2rad # lookup declination of star and convert to rads
-    Ho = obs[i][1]*deg2rad # lookup elevation of observation and convert to rads
-    GHA = obs[i][3]*deg2rad
-    A[i] = [np.cos(DEC)*np.cos(GHA), np.cos(DEC)*np.sin(GHA), np.sin(DEC)]
+A = np.zeros([3, 3])  # initalize A as square matrix
+B = np.zeros([3, 1])  # initalize B as column matrix
+for i in range(numObs):  # populate A and B
+    starNum = obs[i][0]  # which star is used for this observation
+    DEC = NavStars[starNum][1] * deg2rad  # lookup DEC, convert to rads
+    Ho = obs[i][1] * deg2rad  # lookup elevation, convert to rads
+    GHA = obs[i][3] * deg2rad  # lookup, and convert to rads
+    A[i] = [np.cos(DEC) * np.cos(GHA), np.cos(DEC) * np.sin(GHA), np.sin(DEC)]
     B[i] = [np.sin(Ho)]
 
 try:
-    #TODO: insert a check for matrix invertability, e.g. if det(A)<0.1 raise a warning
-    A_inv = np.linalg.inv(A) # TODO investigate whether this needs to be inverse or will transpose work?
-    print("A_inv is a ",type(A_inv),"\nA_inv=",A_inv) # TODO comment out in production code
-    X = np.dot(A_inv,B) #solve matrix equation for cartesian position
-except(ValueError):
-    print('No solution exists, please try again.')
-    sys.exit(1)
+    # TODO: check for matrix invertability, e.g. if det(A)<0.1 raise a warning
+    if np.linalg.det(A) < 0.1:
+        input("Warning: solution is ill-defined. Press Enter to proceed.")
+    A_inv = np.linalg.inv(A)  # TODO will transpose work here?
+    X = np.dot(A_inv, B)  # solve matrix equation for cartesian position
+except (ValueError):
+    input("No solution exists. Press Enter to try again.")
+    supervisor.reload()
 
-#### Convert to Lat / Lon and print
+# Convert to Lat / Lon
 x, y, z = X[0], X[1], X[2]
-lat = np.arctan2(z,np.sqrt(x*x+y*y))*rad2deg
-lon = np.arctan2(y,x)*rad2deg
+lat = np.arctan2(z, np.sqrt(x * x + y * y)) * rad2deg
+lon = np.arctan2(y, x) * rad2deg
 
-print("Latitude = ",lat)
-print("Longitude = ",lon)
+# Print results
+print("Determined position is:")
+print("Latitude:  ", str(lat[0]), " degrees")
+print("Longitude: ", str(lon[0]), " degrees")
+if settime: # if you just reset the rtc time, don't repeat the script
+    raise SystemExit
+else: # repeat the script after user input
+    input("Press Enter to continue.")
+    supervisor.reload()
