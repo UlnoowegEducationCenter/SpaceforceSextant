@@ -8,17 +8,9 @@
 ###############################################################################
 
 # Import packages
-import board
-import supervisor
 import time
-import digitalio
-import busio
-import adafruit_gps
-import rtc
-import adafruit_character_lcd.character_lcd as characterlcd
-import adafruit_matrixkeypad
 import math
-import ulab.numpy as np
+import numpy as np
 
 # Constants
 UNIX_epoch_JD = 2440587.5
@@ -85,40 +77,6 @@ NavStars = (  # Sideral Hour Angle (SHA) [deg], declination (DEC) [deg]
     (14.0, 15.0),
     )
 
-# Setup GPS
-uart = busio.UART(board.TX, board.RX, baudrate=9600, timeout=3)
-gps = adafruit_gps.GPS(uart, debug=False)
-gps.send_command(b"PMTK314,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0")
-time.sleep(1)
-gps.send_command(b"PMTK220,2000")
-time.sleep(1)
-rtc.set_time_source(gps)
-
-# Setup LCD (Newhaven 1602 w/ RGB backlight)
-lcd_rs = digitalio.DigitalInOut(board.D12)
-lcd_en = digitalio.DigitalInOut(board.D11)
-lcd_d4 = digitalio.DigitalInOut(board.D10)
-lcd_d5 = digitalio.DigitalInOut(board.D9)
-lcd_d6 = digitalio.DigitalInOut(board.D6)
-lcd_d7 = digitalio.DigitalInOut(board.D5)
-lcd_cols = 16
-lcd_rows = 2
-lcd = characterlcd.Character_LCD_Mono(lcd_rs, lcd_en, lcd_d4, lcd_d5,
-                                      lcd_d6, lcd_d7, lcd_cols, lcd_rows)
-lcd.clear()
-lcd.home()
-lcd.cursor = False
-lcd.blink = False
-
-# Setup keypad (Adafruit 3845)
-rows = [digitalio.DigitalInOut(x) for x in (board.A2, board.MOSI, board.SCK, board.D24)]
-cols = [digitalio.DigitalInOut(x) for x in (board.A3, board.A1, board.D25)]
-keys = ((1, 2, 3),
-        (4, 5, 6),
-        (7, 8, 9),
-        ('*', 0, '#'))
-keypad = adafruit_matrixkeypad.Matrix_Keypad(rows, cols, keys)
-
 ###############################################################################
 # Main loop
 ###############################################################################
@@ -153,10 +111,7 @@ while True:
             break
 
         # Get time
-        gps.update()
         obs[i][2] = time.time()
-        print(obs[i][2])
-        # converts GPS / RTC datetime to seconds since UNIX epoch
 
         # calculate GHA
         SHA = NavStars[starNum][0]  # lookup the star numbers & return SHA
@@ -198,8 +153,3 @@ while True:
     print("Determined position is:")
     print("Latitude:  ", str(lat[0]), " degrees")
     print("Longitude: ", str(lon[0]), " degrees")
-    if settime:  # if you just reset the rtc time, don't repeat the script
-        raise SystemExit
-    else:  # repeat the script after user input
-        input("Press Enter to continue.")
-        supervisor.reload()
