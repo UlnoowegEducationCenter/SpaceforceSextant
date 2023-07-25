@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Calculation Result</title>
+    <style>
+      #map {
+        height: 400px;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Calculation Result</h1>
+    <p>Latitude: {{ latitude }}</p>
+    <p>Longitude: {{ longitude }}</p>
+
+    <h3>Your Location on Map:</h3>
+    <div id="map"></div>
+
+    <script>
+      var map;
+      function initMap() {
+        var your_location = {lat: {{ latitude }}, lng: {{ longitude }}};
+
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: your_location,
+          zoom: 8
+        });
+
+        var marker = new google.maps.Marker({
+          position: your_location,
+          map: map
+        });
+      }
+    </script>
+
+    
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCRKr_zhyp0ykvnl92I52cYg29JIZS_Fow&callback=initMap" async defer></script>
+  </body>
+</html>

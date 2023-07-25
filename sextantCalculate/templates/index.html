@@ -1,0 +1,57 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="{% static 'sextantCalculate/css/styles.css' %}">
+    <title>Calculate Position</title>
+</head>
+<body>
+    <video autoplay muted loop id="myVideo" class="bg-video">
+        <source src="{% static 'sextantCalculate/video/background.mp4' %}" type="video/mp4">
+    </video>
+    <div class="centered" id="loading">
+        <img id="loadingLogo" src="{% static 'sextantCalculate/img/loading.gif' %}" style="display: none;">
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <img id="logo" src="{% static 'sextantCalculate/img/logo.png' %}" alt="Logo">
+            <h1>Celestial Navigation with UEC</h1>
+        </div>
+        <form method="post" id="myForm">
+            {% csrf_token %}
+            {% for form in forms %}
+                <div class="form-group">
+                    {{ form.label_tag }} {{ form }}
+                </div>
+            {% endfor %}
+            <button type="submit">Calculate</button>
+        </form>
+        {% if latitude and longitude %}
+            <h2>Position</h2>
+            <p>Latitude: {{ latitude }} degrees</p>
+            <p>Longitude: {{ longitude }} degrees</p>
+        {% endif %}
+        <img id="footerLogo" src="{% static 'sextantCalculate/img/footerLogo.png' %}" alt="Footer Logo">
+    </div>
+
+
+ <script>
+    document.getElementById('myForm').addEventListener('submit', function(e) {
+    e.preventDefault();  // Prevent the form from immediately submitting
+
+    // Show the loading video
+    document.getElementById('loadingLogo').style.display = 'block';
+
+    // After 3 seconds (3000 milliseconds), submit the form
+    setTimeout(function() {
+        e.target.submit();  // 'e.target' is the form
+    }, 3000);
+});
+
+    
+ </script>
+    
+</body>
+</html>
