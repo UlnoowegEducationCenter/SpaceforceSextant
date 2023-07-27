@@ -1,21 +1,28 @@
+{% load static %}
+
+
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
+    <link rel="stylesheet" href="{% static 'sextantCalculate/css/results.css' %}">
     <title>Calculation Result</title>
-    <style>
-      #map {
-        height: 400px;
-        width: 100%;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>Calculation Result</h1>
-    <p>Latitude: {{ latitude }}</p>
-    <p>Longitude: {{ longitude }}</p>
+</head>
+<body>
+    <div class="container">
+       
+        <div class="result">
+            <h2>Calculation Result</h2>
+            <p>Latitude: {{ latitude }}</p>
+            <p>Longitude: {{ longitude }}</p>
+            <div id="map"></div>
+        </div>
+    </div>
 
-    <h3>Your Location on Map:</h3>
-    <div id="map"></div>
+    <footer>
+        <img id="footer-logo" src="{% static 'sextantCalculate/img/footer-logo.png' %}" alt="Footer Logo">
+    </footer>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCRKr_zhyp0ykvnl92I52cYg29JIZS_Fow&callback=initMap" async defer></script>
 
     <script>
       var map;
@@ -33,8 +40,5 @@
         });
       }
     </script>
-
-    
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCRKr_zhyp0ykvnl92I52cYg29JIZS_Fow&callback=initMap" async defer></script>
   </body>
 </html>

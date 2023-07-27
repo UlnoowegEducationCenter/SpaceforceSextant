@@ -1,6 +1,6 @@
 body {
     background-size: cover;
-    font-family: Arial, sans-serif;
+    font-family: 'Courier New', Courier, monospace;
     color: white;
     display: flex;
     justify-content: center;
@@ -102,3 +102,4 @@ button:hover {
     width: 200px;
     height: 200px;
 }
+

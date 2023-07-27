@@ -1,0 +1,38 @@
+body{
+    background-color: rgb(2, 48, 6);
+    font-family: 'Courier New', Courier, monospace;
+}
+.result {
+    color: orange;
+    text-align: center;
+}
+
+.result h2 {
+    font-size: 2em;
+    margin-bottom: 1em;
+}
+
+.result p {
+    font-size: 1.5em;
+    margin-bottom: 1em;
+}
+
+#map {
+    height: 400px;
+    width: 100%;
+    margin-top: 20px;
+}
+
+footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    background-color: black;
+    color: white;
+    padding: 10px 0;
+}
+
+#footer-logo {
+    height: 50px;
+}
