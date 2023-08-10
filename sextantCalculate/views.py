@@ -6,7 +6,7 @@ import math
 import numpy as np
 
 
-def calculate_position_view(request):
+def index_view(request):
     if request.method == 'POST':
         forms = [ObservationForm(request.POST, prefix=str(x)) for x in range(3)]  # Assuming 3 observations
         if all([form.is_valid() for form in forms]):

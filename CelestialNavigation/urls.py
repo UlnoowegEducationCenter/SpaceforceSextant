@@ -4,5 +4,6 @@ from sextantCalculate import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('calculate_position/', views.calculate_position_view, name='calculate_position'),
+    path('', views.index_view, name='index'), # Add this line
+
 ]
