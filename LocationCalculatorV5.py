@@ -1,16 +1,17 @@
-# Celestial Navigation - Position Determination for Adafruit Feather RP2040
+# Celestial Navigation - Position Determination Python Script 
 # By Chris Seymour, EIT
 # Copyright Ulnooweg Education Centre, 2023, All rights reserved
 ###############################################################################
-
-###############################################################################
-# Setup
-###############################################################################
-
-# Import packages
 import time
 import math
 import numpy as np
+from astropy import units as u
+from astropy.units import UnitsError
+from astropy.coordinates import Angle, Latitude, Longitude
+
+# Options
+decimalDegrees = True
+numObs = 3 # might implement more than 3 observations in the future
 
 # Constants
 UNIX_epoch_JD = 2440587.5
@@ -77,53 +78,53 @@ NavStars = (  # Sideral Hour Angle (SHA) [deg], declination (DEC) [deg]
     (14.0, 15.0),
     )
 
+
 ###############################################################################
 # Main loop
 ###############################################################################
 
 while True:
-
-    # Get observations from user
-    numObs = 3
+    
+    # obs = [star number, elevation (Ho), time, GHA]
     obs = [[None for i in range(4)] for j in range(numObs)]
-    # [star number, elevation (Ho), time, GHA]
+    
     for i in range(numObs):  # for each observation
+    
         # get star number from user & validate input
         while True:
             try:
                 starNum = int(input("Star Number: "))
                 assert starNum in range(len(NavStars))
-            except (ValueError, AssertionError):
+            except(ValueError, AssertionError):
                 print("Invalid star number, try again")
                 continue
-            obs[i][0] = starNum
+            obs[i][0] = starNum  
             break
-
+    
         # get elevation from user and validate input
         while True:
             try:
-                Ho = float(input("Elevation: "))
-                assert (-90.0 <= Ho) & (Ho <= 90.0)
-            except (ValueError, TypeError, AssertionError):
-                print("invalid elevation, try again")
+                Ho = Angle(input("Elevation (d = degrees, m = minutes): "))
+                assert Ho.is_within_bounds("-90d", "+90d")
+            except(ValueError, TypeError, AssertionError, UnitsError):
+                print("Invalid elevation, try again. (remember your units!)")
                 continue
             obs[i][1] = Ho
             break
-
+    
         # Get time
         obs[i][2] = time.time()
-
+    
         # calculate GHA
         SHA = NavStars[starNum][0]  # lookup the star numbers & return SHA
-        UT1 = obs[i][2]  # TODO implement UTC to UT1 calculation
+        UT1 = obs[i][2]  # TODO implement UTC to UT1 calculation (?)
         JD_UT1 = (UT1 / 86400.0) + 2440587.5  # UT1 to julian date
-        T_u = (JD_UT1 - 2451545.0)  # from Sideral Time wiki page
-        ERA = 360 * (0.7790572732640 + 1.00273781191135448 * T_u)  # [deg]
+        T_u = (JD_UT1 - 2451545.0)  # J2000 epoch (?)
+        ERA = 360 * (0.7790572732640 + 1.00273781191135448 * T_u)  # degrees
         GHA = (ERA + SHA) % 360.0  # TODO wrap from +180 to -180
         obs[i][3] = GHA
-
+    
     # Setup and solve matrix equation
-
     A = np.zeros([3, 3])  # initalize A as square matrix
     B = np.zeros([3, 1])  # initalize B as column matrix
     for i in range(numObs):  # populate A and B
@@ -133,23 +134,29 @@ while True:
         GHA = obs[i][3] * deg2rad  # lookup, and convert to rads
         A[i] = [np.cos(DEC) * np.cos(GHA), np.cos(DEC) * np.sin(GHA), np.sin(DEC)]
         B[i] = [np.sin(Ho)]
-
     try:
-        # TODO: check for matrix invertability, e.g. if det(A)<0.1 raise a warning
+        # check for matrix invertability, e.g. if det(A)<0.1 raise a warning
         if np.linalg.det(A) < 0.1:
             input("Warning: solution is ill-defined. Press Enter to proceed.")
         A_inv = np.linalg.inv(A)  # TODO will transpose work here?
         X = np.dot(A_inv, B)  # solve matrix equation for cartesian position
     except (ValueError):
         input("No solution exists. Press Enter to try again.")
-        supervisor.reload()
-
+        continue
+    
     # Convert to Lat / Lon
     x, y, z = X[0], X[1], X[2]
-    lat = np.arctan2(z, np.sqrt(x * x + y * y)) * rad2deg
-    lon = np.arctan2(y, x) * rad2deg
-
-    # Print results
+    lat = Latitude( np.arctan2(z, np.sqrt(x * x + y * y)), unit = u.rad)
+    lon = - Longitude( np.arctan2(y, x), unit = u.rad, wrap_angle = 180*u.deg )
+    
+    # Print results    
     print("Determined position is:")
-    print("Latitude:  ", str(lat[0]), " degrees")
-    print("Longitude: ", str(lon[0]), " degrees")
+    if decimalDegrees:
+        print("Latitude:  ", lat.to_string(unit = u.deg, decimal = True, precision = 4 ))
+        print("Longitude: ", lon.to_string(unit = u.deg, decimal = True, precision = 4 ))
+    else:
+        print("Latitude:  ", lat.to_string(unit = u.deg, decimal = False, sep = 'dms', precision = 0 ))
+        print("Longitude: ", lon.to_string(unit = u.deg, decimal = False, sep = 'dms', precision = 0 ))
+
+    input("Press Enter to continue.")
+    continue
