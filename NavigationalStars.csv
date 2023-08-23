@@ -1,59 +1,59 @@
-﻿Almanac Number,Common Name,Bayer Designation,Right Ascention [degrees],Declination [degrees]
-0,Polaris,α Ursae Minoris,41,89
-1,Alpheratz,α Andromedae,2,29
-2,Ankaa,α Phoenicis,6,-42
-3,Schedar,α Cassiopeiae,10,56
-4,Diphda,β Ceti,11,-18
-5,Achernar,α Eridani,24,-57
-6,Hamal,α Arietis,32,23
-7,Acamar,θ Eridani,44,-40
-8,Menkar,α Ceti,45,4
-9,Mirfak,α Persei,51,50
-10,Aldebaran,α Tauri,69,16
-11,Rigel,β Orionis,78,-8
-12,Capella,α Aurigae,79,46
-13,Bellatrix,γ Orionis,81,6
-14,Elnath,β Tauri,81,29
-15,Alnilam,ε Orionis,84,-1
-16,Betelgeuse,α Orionis,89,7
-17,Canopus,α Carinae,96,-53
-18,Sirius,α Cani-Majoris,101,-17
-19,Adhara,ε Cani-Majoris,104,-29
-20,Procyon,α Cani-Minoris,115,5
-21,Pollux,β Geminorum,116,28
-22,Avior,ε1 Carinae,126,-59
-23,Suhail,λ Velorum,137,-43
-24,Miaplacidus,β Carinae,138,-70
-25,Alphard,α Hydrae,142,-9
-26,Regulus,α Leonis,152,12
-27,Dubhe,α1 Ursae Majoris,166,62
-28,Denebola,β Leonis,177,15
-29,Gienah,γ Corvi,184,-17
-30,Acrux,α1 Crucis,186,-63
-31,Gacrux,γ Crucis,188,-57
-32,Alioth,ε Ursae Majoris,193,56
-33,Spica,α Virginis,201,-11
-34,Alkaid,η Ursae Majoris,207,49
-35,Hadar,β Centauri,211,-60
-36,Menkent,θ Centauri,211,-36
-38,Rigil Kentaurus,α1 Centauri,220,-61
-37,Arcturus,α Bootis,214,19
-39,Zubenelgenubi,α Librae,222,-16
-40,Kochab,β Ursae Minoris,223,74
-41,Alphecca,α Corona Borealis,233,27
-42,Antares,α Scorpii,247,-26
-43,Atria,α Trianguli Australis,252,-69
-44,Sabik,η Ophiuchi,257,-16
-45,Shaula,λ Scorpii,263,-37
-46,Rasalhague,α Ophiuchi,264,13
-47,Eltanin,γ Draconis,269,51
-48,Kau-Australis,ε Sagittarii,276,-34
-49,Vega,α Lyrae,279,39
-50,Nunki,σ Sagittarii,284,-26
-51,Altair,α Aquilae,297,9
-52,Peacock,α Pavonis,306,-57
-53,Deneb,α Cygni,310,45
-54,Enif,ε Pegasi,326,10
-55,Al Na'ir,α Gruis,332,-47
-56,Fomalhaut,α Pisci-Austrini,344,-30
-57,Markab,α Pegasi,346,15
+﻿Almanac Number,Common Name,Right Ascention [degrees],Declination [degrees]
+0,Polaris        ,37.95456067,89.26410897
+1,Alpheratz      ,2.09691619,29.09043112
+2,Ankaa          ,6.57104752,-42.30598719
+3,Schedar        ,10.12683778,56.53733116
+4,Diphda         ,10.89737874,-17.98660632
+5,Achernar       ,24.42852283,-57.23675281
+6,Hamal          ,31.7933571,23.46241755
+7,Acamar         ,44.56531356,-40.30468123
+8,Menkar         ,45.5698878,4.08973877
+9,Mirfak         ,51.08070872,49.86117929
+10,Aldebaran      ,68.98016279,16.50930235
+11,Rigel          ,78.63446707,-8.20163836
+12,Capella        ,79.17232794,45.99799147
+13,Bellatrix      ,81.28276356,6.34970326
+14,Elnath         ,81.57297133,28.60745172
+15,Alnilam        ,84.05338894,-1.20191914
+16,Betelgeuse     ,88.79293899,7.407064
+17,Canopus        ,95.98795783,-52.69566138
+18,Sirius         ,101.2871553,-16.71611586
+19,Adhara         ,104.6564532,-28.97208616
+20,Procyon        ,114.8254979,5.22498756
+21,Pollux         ,116.3289578,28.02619889
+22,Avior          ,125.6284802,-59.50948419
+23,Suhail         ,136.9989911,-43.43259091
+24,Miaplacidus    ,138.2999061,-69.7172076
+25,Alphard        ,141.8968446,-8.65859953
+26,Regulus        ,152.0929624,11.96720878
+27,Dubhe          ,165.9319647,61.75103469
+28,Denebola       ,177.2649098,14.57205806
+29,Gienah         ,183.951545,-17.54193046
+30,Acrux          ,186.6495634,-63.09909286
+31,Gacrux         ,187.7914984,-57.11321346
+32,Alioth         ,193.50729,55.95982296
+33,Spica          ,201.2982474,-11.16131949
+34,Alkaid         ,206.8851573,49.31326673
+35,Hadar          ,210.9558556,-60.37303516
+36,Menkent        ,211.6706147,-36.36995474
+38,Rigil Kentaurus,219.9020583,-60.83399269
+37,Arcturus       ,213.9153003,19.18240916
+39,Zubenelgenubi  ,222.7196379,-16.04177652
+40,Kochab         ,222.6763575,74.15550394
+41,Alphecca       ,233.67195,26.71469278
+42,Antares        ,247.3519154,-26.43200261
+43,Atria          ,252.1662295,-69.02771185
+44,Sabik          ,257.5945287,-15.72490664
+45,Shaula         ,263.4021672,-37.10382355
+46,Rasalhague     ,263.7336227,12.56003739
+47,Eltanin        ,269.1515412,51.48889562
+48,Kaus Australis ,276.0429934,-34.38461649
+49,Vega           ,279.2347348,38.78368896
+50,Nunki          ,283.8163604,-26.29672411
+51,Altair         ,297.6958273,8.8683212
+52,Peacock        ,306.4119044,-56.73508973
+53,Deneb          ,310.3579798,45.28033881
+54,Enif           ,326.0464839,9.875008653
+55,Alpha Gruis    ,332.0582697,-46.96097438
+56,Fomalhaut      ,344.4126927,-29.62223703
+57,Markab         ,346.1902227,15.20526715
