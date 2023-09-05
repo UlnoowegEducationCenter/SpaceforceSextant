@@ -9,8 +9,6 @@ from astropy import units as u
 from astropy.coordinates import Angle, Latitude, Longitude, EarthLocation
 from astropy.coordinates import AltAz, SkyCoord, golden_spiral_grid
 from prettytable import PrettyTable
-from tkinter import *
-
 
 
 #### Options
@@ -76,6 +74,7 @@ f =  tuple([ #temperature, temperature correction factor
        [-37.0*u.deg_C, 1.3*u.dimensionless_unscaled],
        ])
 
+
 #### Functions 
 
 # get observations from usert
@@ -140,8 +139,12 @@ def getTestObservations(testLocation, testTime, numObs = 3, round2minutes = True
                 continue # pick another star and try again
             else:
                 break # use this star
+        #print(round2minutes)
+        #input(obsEl)
         if round2minutes == True: #account for precision of measurement
-            obsEl = Latitude(obsEl.to_string(unit=u.deg, fields = 2),unit=u.deg)    
+            obsEl = Latitude(obsEl.to_string(unit=u.deg, fields = 2),unit=u.deg)
+            # obsEl = Latitude(obsEl.to_string(unit=u.deg, fields = 1),unit=u.deg)
+        #input(obsEl)
         testObs[i][1] = obsEl
         testObs[i][2] = testTime
     return testObs
@@ -276,7 +279,7 @@ while testMode == True: # test mode
     round2minutes   = True
     testAtm         = atm_std
     minAlt          = 5.0*u.deg
-    simulateRefraction = True 
+    simulateRefraction = True
     correctForRefraction = True
     numObs = 4
     
